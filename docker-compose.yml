@@ -1,0 +1,67 @@
+version: "2"
+services:
+  
+  nginx:
+    image: nginx:latest
+    container_name: NginxDocker
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./src:/src
+      - ./config/nginx:/etc/nginx/conf.d
+      
+    depends_on:
+      - web
+    networks: 
+      - djangonetwork
+    
+  web:
+    build: .
+    container_name: DJANGODocker
+    volumes:
+      - ./src:/src
+    expose:
+      - "8000"
+    # depends_on: 
+    #   - db
+    networks:
+      - djangonetwork
+  # db:
+  #   image: postgres:latest
+  #   container_name: PostgreDocker
+  #   ports: 
+  #     - "7777:5432"
+  #   #volumes: 
+  #   #  -   C:/Program Files/PostgreSQL/12/data:/var/lib/postgresql/data
+  #   # environment: 
+  #   #   - POSTGRES_USER=postgres
+  #   #   - POSTGRES_PASSWORD=251153lol
+  #   #   - POSTGRES_DB=thegreatdb
+  #   networks: 
+  #   - djangonetwork
+
+  redis:
+    image: redis
+    command: redis-server
+    ports: 
+      - '6379:6379'
+
+  #worker_channels:
+   # build: .
+   # command: python manage.py runworker
+   # volumes: 
+   #   - ./src:/src
+    #links: 
+   #   - redis
+  channels:
+    build: .
+    command: daphne -b 0.0.0.0 -p 8001 BestApp.asgi:application
+    volumes: 
+    - ./src:/src
+    ports: 
+    - "8001:8001"
+    links: 
+      - redis
+networks:
+  djangonetwork:
+    driver: bridge

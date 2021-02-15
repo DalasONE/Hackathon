@@ -1,0 +1,13 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+
+[packages]
+channels = "==2.4.0"
+asgi-redis = "==1.4.3"
+
+[requires]
+python_version = "3.7"
